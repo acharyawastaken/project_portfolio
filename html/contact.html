@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Message Acharya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+        .contact-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            min-height: 100vh;
+        }
+        @media (min-width: 1024px) {
+            .contact-layout { grid-template-columns: 1fr 1fr; }
+        }
+        .contact-left {
+            background: var(--zinc-50);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-right: 2px dashed var(--zinc-200);
+            min-height: 50vh;
+        }
+        .contact-right {
+            padding: 4rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--white);
+        }
+        .contact-form {
+            width: 100%;
+            max-width: 420px;
+        }
+        
+        /* Character container */
+        .char-container {
+            position: relative;
+            width: 500px;
+            height: 400px;
+            transform-origin: bottom center;
+            margin-top: 5rem;
+        }
+        
+        .char {
+            position: absolute;
+            bottom: 0;
+            transform-origin: bottom center;
+            transition: transform 0.6s var(--ease-back), height 0.6s var(--ease-back);
+        }
+        
+        .char-purple { left: 70px; width: 180px; height: 400px; background: #6C3FF5; border-radius: 10px 10px 0 0; z-index: 1; }
+        .char-black { left: 240px; width: 120px; height: 310px; background: #2D2D2D; border-radius: 8px 8px 0 0; z-index: 2; }
+        .char-orange { left: 0px; width: 240px; height: 200px; background: #FF9B6B; border-radius: 120px 120px 0 0; z-index: 3; }
+        .char-yellow { left: 310px; width: 140px; height: 230px; background: #E8D754; border-radius: 70px 70px 0 0; z-index: 4; }
+        
+        .eye-container {
+            position: absolute;
+            display: flex;
+            transition: transform 0.6s var(--ease-back);
+        }
+        
+        .eye {
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: height 0.15s;
+            overflow: hidden;
+        }
+        
+        .eye.blink { height: 2px !important; }
+        
+        .pupil {
+            background: #2D2D2D;
+            border-radius: 50%;
+            transition: transform 0.15s ease-out;
+        }
+
+        /* Nav Override */
+        .back-nav {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            z-index: 100;
+        }
+
+        .input-field {
+            width: 100%;
+            height: 3rem;
+            padding: 0 1rem;
+            border: 2px solid var(--zinc-200);
+            border-radius: 8px;
+            font-family: var(--font);
+            font-size: 0.9rem;
+            background: var(--zinc-50);
+            color: var(--zinc-900);
+            transition: border-color 0.3s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: var(--blue-500);
+        }
+    </style>
+</head>
+<body>
+    <div class="magnetic-cursor" id="magnetic-cursor"></div>
+    <div class="bg-grid"></div>
+
+    <a href="index.html" class="btn btn--dark back-nav" data-magnetic="true">← Back to Portfolio</a>
+
+    <div class="contact-layout">
+        <!-- Left Side: Characters -->
+        <div class="contact-left">
+            <div class="char-container">
+                <!-- Purple -->
+                <div class="char char-purple" id="c-purple">
+                    <div class="eye-container" style="gap: 32px; left: 45px; top: 40px;" id="eyes-purple">
+                        <div class="eye" style="width: 18px; height: 18px;" data-maxdist="5"><div class="pupil" style="width: 7px; height: 7px;"></div></div>
+                        <div class="eye" style="width: 18px; height: 18px;" data-maxdist="5"><div class="pupil" style="width: 7px; height: 7px;"></div></div>
+                    </div>
+                </div>
+                
+                <!-- Black -->
+                <div class="char char-black" id="c-black">
+                    <div class="eye-container" style="gap: 24px; left: 26px; top: 32px;" id="eyes-black">
+                        <div class="eye" style="width: 16px; height: 16px;" data-maxdist="4"><div class="pupil" style="width: 6px; height: 6px;"></div></div>
+                        <div class="eye" style="width: 16px; height: 16px;" data-maxdist="4"><div class="pupil" style="width: 6px; height: 6px;"></div></div>
+                    </div>
+                </div>
+
+                <!-- Orange -->
+                <div class="char char-orange" id="c-orange">
+                    <div class="eye-container" style="gap: 32px; left: 82px; top: 90px;" id="eyes-orange">
+                        <!-- pupils only, no white eye bg -->
+                        <div class="eye" style="width: 12px; height: 12px; background: transparent;" data-maxdist="5"><div class="pupil" style="width: 12px; height: 12px;"></div></div>
+                        <div class="eye" style="width: 12px; height: 12px; background: transparent;" data-maxdist="5"><div class="pupil" style="width: 12px; height: 12px;"></div></div>
+                    </div>
+                </div>
+
+                <!-- Yellow -->
+                <div class="char char-yellow" id="c-yellow">
+                    <div class="eye-container" style="gap: 24px; left: 52px; top: 40px;" id="eyes-yellow">
+                        <div class="eye" style="width: 12px; height: 12px; background: transparent;" data-maxdist="5"><div class="pupil" style="width: 12px; height: 12px;"></div></div>
+                        <div class="eye" style="width: 12px; height: 12px; background: transparent;" data-maxdist="5"><div class="pupil" style="width: 12px; height: 12px;"></div></div>
+                    </div>
+                    <div id="yellow-mouth" style="position: absolute; width: 20px; height: 4px; background: #2D2D2D; border-radius: 4px; left: 40px; top: 88px; transition: transform 0.6s var(--ease-back);"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Form -->
+        <div class="contact-right">
+            <div class="contact-form">
+                <div class="section-title-wrap" style="margin-bottom: 2.5rem;">
+                    <h2 class="section-title">Send me a message</h2>
+                    <div class="section-underline"></div>
+                </div>
+                
+                <form id="message-form" style="display: flex; flex-direction: column; gap: 1.8rem;">
+                    <div>
+                        <label style="font-size: 0.9rem; font-weight: 600; color: var(--zinc-900); display: block; margin-bottom: 0.5rem;">Your Name</label>
+                        <input type="text" id="name" class="input-field" placeholder="John Doe">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.9rem; font-weight: 600; color: var(--zinc-900); display: block; margin-bottom: 0.5rem;">Email</label>
+                        <input type="email" id="email" class="input-field" placeholder="john@example.com">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.9rem; font-weight: 600; color: var(--zinc-900); display: block; margin-bottom: 0.5rem;">Message</label>
+                        <textarea id="message" name="message" class="input-field" rows="5" style="height: auto; padding: 1rem; resize: vertical;" placeholder="Hey Acharya, I have a cool project..." maxlength="500" required></textarea>
+                        <div id="char-count" style="text-align: right; font-size: 0.8rem; color: var(--zinc-500); margin-top: -1.5rem; margin-right: 0.5rem;">0/500</div>
+                    </div>
+                    <button type="submit" class="btn btn--blue" data-magnetic="true" style="justify-content: center; width: 100%; margin-top: 0.5rem; padding: 1rem;">
+                        Send Message ✨
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="../js/contact.js"></script>
+</body>
+</html>

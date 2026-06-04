@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description"
+        content="AI Engineer & Full-Stack Developer — Building intelligent systems, RAG pipelines, and scalable SaaS platforms." />
+    <title>Acharya — AI Engineer & Full-Stack Developer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@400;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../css/style.css" />
+</head>
+
+<body>
+
+    <!-- ===== Magnetic Cursor ===== -->
+    <div class="magnetic-cursor" id="magnetic-cursor"></div>
+
+    <!-- ===== Splash Screen with 3D Box Loader ===== -->
+    <div id="splash" aria-hidden="true">
+        <div class="splash-inner">
+            <div class="loader">
+                <div class="box box0"><div></div></div>
+                <div class="box box1"><div></div></div>
+                <div class="box box2"><div></div></div>
+                <div class="box box3"><div></div></div>
+                <div class="box box4"><div></div></div>
+                <div class="box box5"><div></div></div>
+                <div class="box box6"><div></div></div>
+                <div class="box box7"><div></div></div>
+                <div class="ground"><div></div></div>
+            </div>
+            <p class="splash-text">loading my masterpeices ...</p>
+        </div>
+    </div>
+
+    <!-- ===== Toasts ===== -->
+    <div id="toast-container"></div>
+
+    <!-- ===== Background Grid ===== -->
+    <div class="bg-grid"></div>
+
+    <!-- ===== Floating doodles ===== -->
+    <div class="doodles" aria-hidden="true">
+        <span class="doodle d1">✎</span>
+        <span class="doodle d2">✏️</span>
+        <span class="doodle d3">✦</span>
+        <span class="doodle d4">✦</span>
+        <span class="doodle d5">⭐</span>
+        <span class="doodle d6">✨</span>
+    </div>
+
+    <!-- ===== Navigation ===== -->
+    <nav id="navbar">
+        <div class="nav-inner">
+            <a href="#" class="nav-logo">&lt;Acharya /&gt;</a>
+            <div class="nav-links">
+                <a href="#about">About</a>
+                <a href="#skills">Skills</a>
+                <a href="#projects">Projects</a>
+                <a href="#services">Services</a>
+                <a href="contact.html" class="btn btn--blue"
+                    style="padding: 0.3rem 1rem; font-size: 0.85rem; border-width: 1.5px; border-radius: 6px; box-shadow: 2px 2px 0 0 var(--zinc-900);">Send
+                    Message</a>
+            </div>
+            <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ===== Hero ===== -->
+    <header id="hero">
+        <div class="hero-content reveal">
+            <p class="hero-tag">AI Engineer · Full-Stack Developer · Automation Builder</p>
+            <div class="hero-title-wrap">
+                <h1 class="hero-title">
+                    hi... im acharya .. here are my works !!
+                </h1>
+                <span class="hero-sparkle hero-sparkle--right">✨</span>
+                <span class="hero-sparkle hero-sparkle--left">🚀</span>
+                <div class="hero-underline"></div>
+            </div>
+            <p class="hero-desc">
+                Engineering student focused on AI-powered full-stack applications, RAG pipelines, intelligent
+                automation, and data-driven products. (Also, I occasionally write code that works on the first try.)
+            </p>
+
+            <div class="hero-buttons">
+                <a href="https://github.com/acharyawastaken" target="_blank" rel="noreferrer" class="btn btn--dark"
+                    id="btn-github">
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 .5C5.37.5 0 5.78 0 12.292c0 5.21 3.438 9.63 8.205 11.188.6.111.82-.254.82-.567 0-.28-.01-1.022-.015-2.005-3.338.711-4.042-1.582-4.042-1.582-.546-1.36-1.333-1.722-1.333-1.722-1.089-.73.083-.716.083-.716 1.205.083 1.838 1.215 1.838 1.215 1.07 1.803 2.809 1.282 3.495.98.108-.763.418-1.282.762-1.577-2.665-.295-5.466-1.309-5.466-5.827 0-1.287.465-2.339 1.228-3.164-.123-.298-.532-1.497.117-3.12 0 0 1.001-.314 3.28 1.209A11.5 11.5 0 0 1 12 6.803c1.02.005 2.047.135 3.004.397 2.277-1.523 3.275-1.209 3.275-1.209.652 1.623.243 2.822.12 3.12.765.825 1.226 1.877 1.226 3.164 0 4.53-2.805 5.528-5.475 5.818.43.364.823 1.084.823 2.184 0 1.576-.015 2.846-.015 3.232 0 .316.216.683.825.567C20.565 21.917 24 17.497 24 12.292 24 5.78 18.627.5 12 .5z" />
+                    </svg>
+                    GitHub
+                </a>
+                <a href="https://www.linkedin.com/in/acharyawastaken/" target="_blank" rel="noreferrer"
+                    class="btn btn--blue" id="btn-linkedin">
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                    </svg>
+                    LinkedIn
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== About ===== -->
+    <section id="about">
+        <div class="section-header reveal">
+            <p class="section-tag">// who_am_i</p>
+            <div class="section-title-wrap">
+                <h2 class="section-title">About Me</h2>
+                <div class="section-underline"></div>
+            </div>
+        </div>
+        <div class="about-body reveal">
+            <div style="display: flex; gap: 2rem; align-items: center; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 300px;">
+                    <p>I'm an engineering student focused on building <strong>AI-powered full-stack applications</strong>,
+                        intelligent automation systems, and data-driven products.</p>
+                    <p>My primary interests lie in <strong>AI Engineering, RAG pipelines, automation workflows</strong>, and
+                        scalable backend development. I enjoy combining full-stack development, machine learning, and data
+                        analytics to create practical systems that solve real-world problems.</p>
+                    <div class="about-currently">
+                        <p class="about-label">Currently building (and debugging) →</p>
+                        <ul class="about-list">
+                            <li>RAG-based AI applications</li>
+                            <li>Full-stack SaaS platforms</li>
+                            <li>AI workflow automation using n8n</li>
+                            <li>ML-powered analytics systems</li>
+                            <li>FastAPI & MERN backend architectures</li>
+                            <li>Vector search & embeddings pipelines</li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="flex: 1; min-width: 300px; text-align: center; display: flex; justify-content: center;">
+                    <img src="../assets/venn-diagram.png" alt="My Area of Interests Venn Diagram" style="max-width: 100%; height: auto; border-radius: 12px; border: 2px solid var(--zinc-900); box-shadow: 6px 6px 0px 0px var(--zinc-900); background-color: #fff; padding: 1rem;" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Skills ===== -->
+    <section id="skills">
+        <div class="section-header reveal">
+            <p class="section-tag">// tech_stack</p>
+            <div class="section-title-wrap">
+                <h2 class="section-title">ive understood these as my core skills</h2>
+                <span class="section-sparkle section-sparkle--right">⚡</span>
+                <div class="section-underline"></div>
+            </div>
+            <p class="section-desc">(Things I can write without intensely Googling every 5 seconds)</p>
+        </div>
+        <div class="icon-grid" id="skills-grid">
+            <!-- Injected by JS -->
+        </div>
+    </section>
+
+    <!-- ===== Projects ===== -->
+    <section id="projects">
+        <div class="section-header reveal">
+            <p class="section-tag">// projects</p>
+            <div class="section-title-wrap">
+                <h2 class="section-title">My Masterpieces</h2>
+                <span class="section-sparkle section-sparkle--right">✨</span>
+                <span class="section-sparkle section-sparkle--left">⭐</span>
+                <div class="section-underline"></div>
+            </div>
+            <p class="section-desc">Select a domain below to view my work.</p>
+        </div>
+
+        <!-- Domain Selection Cards -->
+        <div id="domain-selection" class="domain-grid">
+            <div class="domain-card reveal" data-domain="fullstack" data-magnetic="true">
+                <div class="domain-card-bg"></div>
+                <div class="domain-card-body">
+                    <h3>Full Stack Development</h3>
+                    <p>SaaS, scalable backends, MERN</p>
+                </div>
+            </div>
+            <div class="domain-card reveal" data-domain="ai" data-magnetic="true">
+                <div class="domain-card-bg"></div>
+                <div class="domain-card-body">
+                    <h3>AI Engineering</h3>
+                    <p>RAG pipelines, Automation, Agents</p>
+                </div>
+            </div>
+            <div class="domain-card reveal" data-domain="data" data-magnetic="true">
+                <div class="domain-card-bg"></div>
+                <div class="domain-card-body">
+                    <h3>Data Scientist</h3>
+                    <p>ML Predictions, ETL, Analytics</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Full Stack -->
+        <div id="projects-view-fullstack" class="domain-projects" style="display: none;">
+            <button class="btn btn--dark back-to-domains" data-magnetic="true" style="margin-bottom: 1rem;">← Back to
+                Domains</button>
+            <h3 class="category-title reveal">Full Stack Development</h3>
+            <div class="projects-grid" id="projects-fullstack">
+                <!-- Injected by JS -->
+            </div>
+        </div>
+
+        <!-- AI Engineering -->
+        <div id="projects-view-ai" class="domain-projects" style="display: none;">
+            <button class="btn btn--dark back-to-domains" data-magnetic="true" style="margin-bottom: 1rem;">← Back to
+                Domains</button>
+            <h3 class="category-title reveal">AI Engineering</h3>
+            <div class="projects-grid" id="projects-ai">
+                <!-- Injected by JS -->
+            </div>
+        </div>
+
+        <!-- Data Science -->
+        <div id="projects-view-data" class="domain-projects" style="display: none;">
+            <button class="btn btn--dark back-to-domains" data-magnetic="true" style="margin-bottom: 1rem;">← Back to
+                Domains</button>
+            <h3 class="category-title reveal">Data Scientist</h3>
+            <div class="projects-grid" id="projects-data">
+                <!-- Injected by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Project Modal ===== -->
+    <div id="project-modal" class="modal" aria-hidden="true">
+        <div class="modal-overlay" onclick="closeProjectModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeProjectModal()">×</button>
+            <div class="modal-split">
+                <!-- Left: Video Showcase -->
+                <div class="modal-left">
+                    <video controls class="project-video" id="modal-video">
+                        <!-- Add your video source here in the future -->
+                        <source src="" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="video-placeholder" id="modal-video-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 48px; height: 48px; margin-bottom: 1rem;"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                        <p style="font-weight: 600; font-size: 1.1rem; margin-bottom: 0.5rem;">Project Demo Video</p>
+                        <p style="font-size: 0.85rem; opacity: 0.8;">(Upload your video in index.html)</p>
+                    </div>
+                </div>
+                <!-- Right: Thoughts & Stack -->
+                <div class="modal-right">
+                    <div class="modal-top">
+                        <p style="font-size: 0.8rem; color: var(--blue-500); font-weight: 700; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;">// developer_notes</p>
+                        <h3 id="modal-title" style="font-size: 1.8rem; margin-bottom: 1rem; color: var(--zinc-900); font-weight: 800;">Project Title</h3>
+                        <div style="background: var(--zinc-100); padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--amber-400);">
+                            <p id="modal-thought" style="font-style: italic; color: var(--zinc-800); line-height: 1.6; font-size: 0.95rem;"></p>
+                        </div>
+                    </div>
+                    <div class="modal-bottom">
+                        <p style="font-size: 0.8rem; color: var(--blue-500); font-weight: 700; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px;">// tech_stack</p>
+                        <ul id="modal-tech" class="project-tech" style="margin-bottom: 2rem;"></ul>
+                        <a href="#" id="modal-github" target="_blank" rel="noreferrer" class="btn btn--dark" style="width: 100%; justify-content: center; font-size: 1rem; padding: 0.8rem;">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.37.5 0 5.78 0 12.292c0 5.21 3.438 9.63 8.205 11.188.6.111.82-.254.82-.567 0-.28-.01-1.022-.015-2.005-3.338.711-4.042-1.582-4.042-1.582-.546-1.36-1.333-1.722-1.333-1.722-1.089-.73.083-.716.083-.716 1.205.083 1.838 1.215 1.838 1.215 1.07 1.803 2.809 1.282 3.495.98.108-.763.418-1.282.762-1.577-2.665-.295-5.466-1.309-5.466-5.827 0-1.287.465-2.339 1.228-3.164-.123-.298-.532-1.497.117-3.12 0 0 1.001-.314 3.28 1.209A11.5 11.5 0 0 1 12 6.803c1.02.005 2.047.135 3.004.397 2.277-1.523 3.275-1.209 3.275-1.209.652 1.623.243 2.822.12 3.12.765.825 1.226 1.877 1.226 3.164 0 4.53-2.805 5.528-5.475 5.818.43.364.823 1.084.823 2.184 0 1.576-.015 2.846-.015 3.232 0 .316.216.683.825.567C20.565 21.917 24 17.497 24 12.292 24 5.78 18.627.5 12 .5z"/></svg>
+                            View Repository on GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Services ===== -->
+    <section id="services">
+        <div class="section-header reveal">
+            <p class="section-tag">// services</p>
+            <div class="section-title-wrap">
+                <h2 class="section-title">What I Can Do For You</h2>
+                <div class="section-underline"></div>
+            </div>
+        </div>
+        <div class="services-grid" id="services-grid" style="margin-bottom: 2rem;">
+            <!-- Injected by JS -->
+        </div>
+        <div style="text-align: center; margin-top: 3rem;" class="reveal">
+            <a href="https://www.linkedin.com/in/acharyawastaken/" target="_blank" rel="noreferrer" class="btn btn--blue" data-magnetic="true">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                View My Profile on LinkedIn
+            </a>
+        </div>
+    </section>
+
+    <!-- ===== Connect ===== -->
+    <section id="connect">
+        <div class="section-header reveal">
+            <p class="section-tag">// connect</p>
+            <div class="section-title-wrap">
+                <h2 class="section-title">Let's Build Something</h2>
+                <div class="section-underline"></div>
+            </div>
+            <p class="section-desc">I'm always open to new projects, collaborations, and opportunities.</p>
+        </div>
+
+        <div class="connect-cards">
+            <a href="https://github.com/acharyawastaken" target="_blank" rel="noreferrer"
+                class="connect-card rotate-n1 reveal" id="card-github">
+                <div class="connect-card-bg"></div>
+                <div class="connect-card-body">
+                    <div class="connect-icon connect-icon--dark">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 .5C5.37.5 0 5.78 0 12.292c0 5.21 3.438 9.63 8.205 11.188.6.111.82-.254.82-.567 0-.28-.01-1.022-.015-2.005-3.338.711-4.042-1.582-4.042-1.582-.546-1.36-1.333-1.722-1.333-1.722-1.089-.73.083-.716.083-.716 1.205.083 1.838 1.215 1.838 1.215 1.07 1.803 2.809 1.282 3.495.98.108-.763.418-1.282.762-1.577-2.665-.295-5.466-1.309-5.466-5.827 0-1.287.465-2.339 1.228-3.164-.123-.298-.532-1.497.117-3.12 0 0 1.001-.314 3.28 1.209A11.5 11.5 0 0 1 12 6.803c1.02.005 2.047.135 3.004.397 2.277-1.523 3.275-1.209 3.275-1.209.652 1.623.243 2.822.12 3.12.765.825 1.226 1.877 1.226 3.164 0 4.53-2.805 5.528-5.475 5.818.43.364.823 1.084.823 2.184 0 1.576-.015 2.846-.015 3.232 0 .316.216.683.825.567C20.565 21.917 24 17.497 24 12.292 24 5.78 18.627.5 12 .5z" />
+                        </svg>
+                    </div>
+                    <h3 class="connect-name">GitHub</h3>
+                    <p class="connect-desc">@acharyawastaken</p>
+                </div>
+            </a>
+            <a href="https://www.linkedin.com/in/acharyawastaken/" target="_blank" rel="noreferrer"
+                class="connect-card rotate-p1 reveal" id="card-linkedin">
+                <div class="connect-card-bg"></div>
+                <div class="connect-card-body">
+                    <div class="connect-icon connect-icon--blue">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                        </svg>
+                    </div>
+                    <h3 class="connect-name">LinkedIn</h3>
+                    <p class="connect-desc">/in/acharyawastaken</p>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- ===== Footer ===== -->
+    <footer id="footer">
+        <p class="footer-text">&lt;/&gt; Built by Acharya · AI Engineering × Full-Stack × Automation</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="../js/script.js"></script>
+</body>
+
+</html>
