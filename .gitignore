@@ -37,3 +37,8 @@ server/app.log
 Thumbs.db
 .vscode/
 .idea/
+
+# AWS Keys & Credentials
+*.pem
+project_portfolio/
+

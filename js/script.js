@@ -214,35 +214,43 @@ function initSplash() {
 
 /* === TOAST NOTIFICATIONS === */
 const toastMessages = [
-    "hello , thank you for really seeing my work !!",
-    "wow, you're still scrolling? I'm flattered!..",
-    "fun fact: this site was built with 90% caffeine lmao",
-    "hire me before the AI takes over!!!",
-    "did you notice the floating doodles?hmm??",
-    "scrolling is a great thumb workout :D"
+    { msg: "hello , thank you for really seeing my work !!", icon: "👋" },
+    { msg: "wow, you're still scrolling? I'm flattered!..", icon: "👀" },
+    { msg: "fun fact: this site was built with 90% caffeine lmao", icon: "☕" },
+    { msg: "hire me before the AI takes over!!!", icon: "🤖" },
+    { msg: "did you notice the floating doodles?hmm??", icon: "✏️" },
+    { msg: "scrolling is a great thumb workout :D", icon: "💪" },
+    { msg: "Acharya is probably centering a div right now.", icon: "🎨" },
+    { msg: "Full-Stack Architecture: AWS S3 + Amazon EC2.", icon: "☁️" },
+    { msg: "FastAPI server with Swagger interactive docs on /docs.", icon: "⚡" },
+    { msg: "S3 static website hosting is completely serverless.", icon: "💡" },
+    { msg: "Feel free to say hi via the contact page!", icon: "📬" }
 ];
 
-function triggerToast() {
+function triggerToast(customMsg, customIcon) {
     const container = document.getElementById("toast-container");
     if (!container) return;
 
-    const msg = toastMessages[Math.floor(Math.random() * toastMessages.length)];
+    let item;
+    if (customMsg) {
+        item = { msg: customMsg, icon: customIcon || "✨" };
+    } else {
+        item = toastMessages[Math.floor(Math.random() * toastMessages.length)];
+    }
+
     const toast = document.createElement("div");
     toast.className = "toast";
-    toast.innerHTML = `<span>👋</span> <div>${msg}</div>`;
-
+    toast.innerHTML = `<span>${item.icon}</span><p>${item.msg}</p>`;
     container.appendChild(toast);
 
-    // Animate in
     requestAnimationFrame(() => {
         toast.classList.add("show");
     });
 
-    // Remove after 5s
     setTimeout(() => {
         toast.classList.remove("show");
-        setTimeout(() => toast.remove(), 500);
-    }, 5000);
+        setTimeout(() => toast.remove(), 600);
+    }, 4500);
 }
 
 /* === MAGNETIC CURSOR === */
@@ -320,37 +328,6 @@ function initMagneticCursor() {
         });
         el.addEventListener('pointerout', () => { xTo(0); yTo(0); });
     });
-}
-
-/* === TOAST NOTIFICATIONS === */
-const toastMessages = [
-    { msg: "Acharya is probably centering a div right now.", icon: "🎨" },
-    { msg: "Full-Stack Architecture: AWS S3 + Amazon EC2.", icon: "☁️" },
-    { msg: "FastAPI server with Swagger interactive docs on /docs.", icon: "⚡" },
-    { msg: "S3 static website hosting is completely serverless.", icon: "💡" },
-    { msg: "Feel free to say hi via the contact page!", icon: "📬" }
-];
-
-let toastIndex = 0;
-function triggerToast(customMsg, customIcon) {
-    const container = document.getElementById("toast-container");
-    if (!container) return;
-
-    const toastData = customMsg 
-        ? { msg: customMsg, icon: customIcon || "✨" }
-        : toastMessages[toastIndex++ % toastMessages.length];
-
-    const toast = document.createElement("div");
-    toast.className = "toast";
-    toast.innerHTML = `<span>${toastData.icon}</span><p>${toastData.msg}</p>`;
-    container.appendChild(toast);
-
-    setTimeout(() => toast.classList.add("show"), 50);
-
-    setTimeout(() => {
-        toast.classList.remove("show");
-        setTimeout(() => toast.remove(), 600);
-    }, 4500);
 }
 
 /* === CLOUD BACKEND INTEGRATION === */
