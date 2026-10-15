@@ -1,0 +1,32 @@
+# ==========================================================
+# Commands to deploy Acharya Portfolio Backend on AWS EC2
+# Compatible with Amazon Linux 2023 / Amazon Linux 2 (t3.micro)
+# ==========================================================
+
+# 1. Update system packages
+sudo dnf update -y
+
+# 2. Install Git and Python 3 + Pip
+sudo dnf install git python3 python3-pip -y
+
+# 3. Clone portfolio repository
+git clone https://github.com/acharyawastaken/project_portfolio.git
+
+# 4. Navigate to server directory
+cd project_portfolio/server
+
+# 5. Install Python dependencies
+pip3 install -r requirements.txt
+
+# 6. Run FastAPI application directly (for initial testing)
+python3 -m uvicorn main:app --host 0.0.0.0 --port 8000
+
+# 7. Or run in background with nohup (keeps running after SSH disconnect)
+nohup python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &
+
+# 8. Check running process and logs
+ps aux | grep uvicorn
+tail -f app.log
+
+# 9. Verify from local machine / browser:
+# http://<EC2_PUBLIC_IP>:8000/docs

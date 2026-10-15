@@ -259,64 +259,154 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // EmailJS Setup
-    // Initialize EmailJS with your Public Key
-    emailjs.init("q8VbkeA2nt-tHaXye");
+    // Cloud Backend & EmailJS Setup
+    const backendPill = document.getElementById('backend-status-pill');
+    const backendDot = document.getElementById('backend-status-dot');
+    const backendLabel = document.getElementById('backend-status-label');
+    const formFeedback = document.getElementById('form-feedback');
+
+    let isBackendConnected = false;
+    const apiBase = (typeof CONFIG !== 'undefined' && CONFIG.BASE_URL) ? CONFIG.BASE_URL : (typeof BASE_URL !== 'undefined' ? BASE_URL : "http://localhost:8000");
+
+    // Initialize EmailJS as fallback
+    if (typeof emailjs !== 'undefined') {
+        emailjs.init("q8VbkeA2nt-tHaXye");
+    }
+
+    // Check Cloud Backend Connection
+    async function checkCloudBackend() {
+        if (!backendPill) return;
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3000);
+            const res = await fetch(`${apiBase}/api/health`, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            if (res.ok) {
+                isBackendConnected = true;
+                backendDot.style.background = "#22c55e"; // Green
+                backendLabel.textContent = "AWS EC2 Backend: Connected (Port 8000)";
+                backendPill.style.borderColor = "#86efac";
+                backendPill.style.background = "#f0fdf4";
+                return;
+            }
+        } catch (err) {
+            // Backend offline or unreachable (e.g. EC2 instance not started yet)
+        }
+
+        isBackendConnected = false;
+        backendDot.style.background = "#f59e0b"; // Amber
+        backendLabel.textContent = "S3 Static Mode (EmailJS Active)";
+        backendPill.style.borderColor = "#fde68a";
+        backendPill.style.background = "#fffbeb";
+    }
+
+    checkCloudBackend();
+
+    function showFeedback(msg, type = 'success') {
+        if (!formFeedback) return;
+        formFeedback.style.display = 'block';
+        if (type === 'success') {
+            formFeedback.style.background = '#f0fdf4';
+            formFeedback.style.color = '#15803d';
+            formFeedback.style.borderColor = '#bbf7d0';
+        } else {
+            formFeedback.style.background = '#fef2f2';
+            formFeedback.style.color = '#b91c1c';
+            formFeedback.style.borderColor = '#fecaca';
+        }
+        formFeedback.innerHTML = msg;
+    }
 
     const form = document.getElementById('message-form');
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        // Rate Limiting Logic: 1 message per week
-        const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+        // Rate Limiting Logic: 1 message per 10 minutes for testing/demo
+        const TEN_MIN_MS = 10 * 60 * 1000;
         const lastSent = localStorage.getItem('lastMessageSent');
-        if (lastSent && (Date.now() - parseInt(lastSent, 10)) < ONE_WEEK_MS) {
-            alert('You have already sent a message recently. Please try again next week!');
+        if (lastSent && (Date.now() - parseInt(lastSent, 10)) < TEN_MIN_MS) {
+            showFeedback('⏱️ You recently sent a message. Please wait a few minutes before sending another!', 'error');
             return;
         }
 
         const btn = form.querySelector('button[type="submit"]');
         const originalText = btn.textContent;
-        btn.textContent = "Sending...";
+        btn.textContent = "Sending to Cloud...";
         btn.style.opacity = "0.7";
         btn.style.pointerEvents = "none";
 
-        const nameInput = document.getElementById('name').value;
-        const emailInput = document.getElementById('email').value;
-        const messageInput = msgInput.value;
+        const nameInput = document.getElementById('name').value.trim();
+        const emailInput = document.getElementById('email').value.trim();
+        const messageInput = msgInput.value.trim();
 
-        // Sanitize final values
+        if (!nameInput || !emailInput || !messageInput) {
+            showFeedback('Please fill out all fields.', 'error');
+            btn.textContent = originalText;
+            btn.style.opacity = "1";
+            btn.style.pointerEvents = "auto";
+            return;
+        }
+
+        // 1. Try EC2 FastAPI Backend first
+        if (isBackendConnected) {
+            try {
+                const response = await fetch(`${apiBase}/api/contact`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: nameInput,
+                        email: emailInput,
+                        message: messageInput
+                    })
+                });
+
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    localStorage.setItem('lastMessageSent', Date.now().toString());
+                    showFeedback(`✅ <strong>Success!</strong> ${data.message} (Message #${data.message_id || 'saved'})`, 'success');
+                    form.reset();
+                    charCountEl.textContent = "0/500";
+                    btn.textContent = originalText;
+                    btn.style.opacity = "1";
+                    btn.style.pointerEvents = "auto";
+                    return;
+                }
+            } catch (err) {
+                console.warn("EC2 API call failed, falling back to EmailJS:", err);
+            }
+        }
+
+        // 2. Fallback to EmailJS (Serverless)
         const sanitize = (str) => str.replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
-        
         const templateParams = {
             from_name: sanitize(nameInput),
             reply_to: sanitize(emailInput),
             message: sanitize(messageInput)
         };
 
-        // Note: Please configure your EmailJS account:
-        // 1. Create account at https://www.emailjs.com/
-        // 2. Connect your Gmail as a Service
-        // 3. Create an Email Template with {{from_name}}, {{reply_to}}, and {{message}}
-        // 4. Put your Template ID below, and your Public Key in emailjs.init above
-        
-        emailjs.send("service_3594", "template_zhxu1x1", templateParams)
-            .then(function(response) {
-                // Update local storage to enforce rate limit
-                localStorage.setItem('lastMessageSent', Date.now().toString());
-                
-                alert('Message sent successfully!');
-                form.reset();
-                charCountEl.textContent = "0/500";
-            }, function(error) {
-                console.error("EmailJS error:", error);
-                alert('Failed to send message. Please ensure Template ID is set in contact.js.');
-            })
-            .finally(function() {
-                btn.textContent = originalText;
-                btn.style.opacity = "1";
-                btn.style.pointerEvents = "auto";
-            });
+        if (typeof emailjs !== 'undefined') {
+            emailjs.send("service_3594", "template_zhxu1x1", templateParams)
+                .then(function() {
+                    localStorage.setItem('lastMessageSent', Date.now().toString());
+                    showFeedback('✅ Message sent successfully via Serverless Email Service!', 'success');
+                    form.reset();
+                    charCountEl.textContent = "0/500";
+                }, function(error) {
+                    console.error("EmailJS error:", error);
+                    showFeedback('⚠️ Message could not be processed. Please check your backend or EmailJS config.', 'error');
+                })
+                .finally(function() {
+                    btn.textContent = originalText;
+                    btn.style.opacity = "1";
+                    btn.style.pointerEvents = "auto";
+                });
+        } else {
+            showFeedback('⚠️ No active transport available to send message.', 'error');
+            btn.textContent = originalText;
+            btn.style.opacity = "1";
+            btn.style.pointerEvents = "auto";
+        }
     });
 });
 

@@ -1,0 +1,15 @@
+[Unit]
+Description=Acharya Portfolio FastAPI Backend Service
+After=network.target
+
+[Service]
+User=ec2-user
+WorkingDirectory=/home/ec2-user/project_portfolio/server
+ExecStart=/usr/bin/python3 -m uvicorn main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=5
+StandardOutput=append:/home/ec2-user/project_portfolio/server/app.log
+StandardError=append:/home/ec2-user/project_portfolio/server/app.log
+
+[Install]
+WantedBy=multi-user.target

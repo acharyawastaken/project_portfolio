@@ -157,10 +157,18 @@
         <!-- Right Side: Form -->
         <div class="contact-right">
             <div class="contact-form">
-                <div class="section-title-wrap" style="margin-bottom: 2.5rem;">
+                <div class="section-title-wrap" style="margin-bottom: 1.5rem;">
                     <h2 class="section-title">Send me a message</h2>
                     <div class="section-underline"></div>
                 </div>
+
+                <!-- Cloud Backend Status Indicator -->
+                <div id="backend-status-pill" style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 600; padding: 6px 12px; border-radius: 9999px; background: #f4f4f5; border: 1px solid #e4e4e7; margin-bottom: 1.5rem; transition: all 0.3s ease;">
+                    <span id="backend-status-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #a1a1aa; display: inline-block; transition: background 0.3s ease;"></span>
+                    <span id="backend-status-label" style="color: var(--zinc-700);">Checking AWS EC2 Backend...</span>
+                </div>
+
+                <div id="form-feedback" style="display: none; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1rem; line-height: 1.4; border: 1px solid transparent;"></div>
                 
                 <form id="message-form" style="display: flex; flex-direction: column; gap: 1.8rem;">
                     <div>
@@ -186,6 +194,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="../js/config.js"></script>
     <script src="../js/contact.js"></script>
 </body>
 </html>

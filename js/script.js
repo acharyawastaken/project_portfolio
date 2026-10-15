@@ -322,6 +322,82 @@ function initMagneticCursor() {
     });
 }
 
+/* === TOAST NOTIFICATIONS === */
+const toastMessages = [
+    { msg: "Acharya is probably centering a div right now.", icon: "🎨" },
+    { msg: "Full-Stack Architecture: AWS S3 + Amazon EC2.", icon: "☁️" },
+    { msg: "FastAPI server with Swagger interactive docs on /docs.", icon: "⚡" },
+    { msg: "S3 static website hosting is completely serverless.", icon: "💡" },
+    { msg: "Feel free to say hi via the contact page!", icon: "📬" }
+];
+
+let toastIndex = 0;
+function triggerToast(customMsg, customIcon) {
+    const container = document.getElementById("toast-container");
+    if (!container) return;
+
+    const toastData = customMsg 
+        ? { msg: customMsg, icon: customIcon || "✨" }
+        : toastMessages[toastIndex++ % toastMessages.length];
+
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.innerHTML = `<span>${toastData.icon}</span><p>${toastData.msg}</p>`;
+    container.appendChild(toast);
+
+    setTimeout(() => toast.classList.add("show"), 50);
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 600);
+    }, 4500);
+}
+
+/* === CLOUD BACKEND INTEGRATION === */
+async function initCloudStatus() {
+    const pill = document.getElementById("cloud-pill");
+    const dot = document.getElementById("cloud-pill-dot");
+    const text = document.getElementById("cloud-pill-text");
+    if (!pill) return;
+
+    const apiBase = (typeof CONFIG !== 'undefined' && CONFIG.BASE_URL) ? CONFIG.BASE_URL : (typeof BASE_URL !== 'undefined' ? BASE_URL : "http://localhost:8000");
+
+    let statusDetails = "Frontend on AWS S3 / Connecting to backend...";
+
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+        const res = await fetch(`${apiBase}/api/health`, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        if (res.ok) {
+            dot.style.background = "#22c55e"; // Green
+            text.textContent = "EC2 API: Online";
+            pill.style.borderColor = "#22c55e";
+            statusDetails = "Connected to AWS EC2 FastAPI Backend on port 8000!";
+            
+            // Record page visit
+            try {
+                fetch(`${apiBase}/api/visit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ page: "home" })
+                });
+            } catch (e) {}
+
+            pill.onclick = () => triggerToast(statusDetails, "🟢");
+            return;
+        }
+    } catch (e) {
+        // Backend offline / not reachable yet
+    }
+
+    dot.style.background = "#a1a1aa"; // Gray
+    text.textContent = "S3 Static Mode";
+    statusDetails = "Frontend hosted serverless on AWS S3. Launch EC2 backend to connect live APIs.";
+    pill.onclick = () => triggerToast(statusDetails, "☁️");
+}
+
 /* === BOOT === */
 document.addEventListener("DOMContentLoaded", () => {
     initSplash();
@@ -329,10 +405,14 @@ document.addEventListener("DOMContentLoaded", () => {
     renderProjects();
     renderServices();
     initNavbar();
+    initCloudStatus();
 
     setTimeout(initReveal, 2500);
     setTimeout(initMagneticCursor, 500);
 
-    // Start toasts every 30 seconds
+    // Initial toast after loading splash completes
+    setTimeout(() => triggerToast("Welcome to Acharya's Portfolio!", "👋"), 3500);
+
+    // Start periodic toasts every 30 seconds
     setInterval(triggerToast, 30000);
 });
