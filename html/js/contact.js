@@ -1,0 +1,412 @@
+/* === MAGNETIC CURSOR (Copied from script.js) === */
+function initMagneticCursor() {
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) return;
+    if (typeof gsap === 'undefined') return;
+    const cursorEl = document.getElementById('magnetic-cursor');
+    if (!cursorEl) return;
+    gsap.set(cursorEl, { xPercent: -50, yPercent: -50 });
+    let pos = { current: { x: -100, y: -100 }, target: { x: -100, y: -100 }, previous: { x: -100, y: -100 } };
+    let isHovered = false; let isDetaching = false;
+    const config = { magneticFactor: 0.2, speedMultiplier: 0.02, maxScaleX: 1, maxScaleY: 0.3, cursorSize: 24, lerpAmount: 0.1, hoverPadding: 12 };
+    const update = () => {
+        if (isHovered) return;
+        pos.current.x += (pos.target.x - pos.current.x) * config.lerpAmount;
+        pos.current.y += (pos.target.y - pos.current.y) * config.lerpAmount;
+        const deltaX = pos.current.x - pos.previous.x; const deltaY = pos.current.y - pos.previous.y;
+        pos.previous.x = pos.current.x; pos.previous.y = pos.current.y;
+        if (isDetaching) {
+            gsap.set(cursorEl, { x: pos.current.x, y: pos.current.y, scaleX: 1, scaleY: 1, rotate: 0, overwrite: 'auto' });
+        } else {
+            const speed = Math.sqrt(deltaX * deltaX + deltaY * deltaY) * config.speedMultiplier;
+            gsap.set(cursorEl, {
+                x: pos.current.x, y: pos.current.y,
+                rotate: Math.atan2(deltaY, deltaX) * (180 / Math.PI),
+                scaleX: 1 + Math.min(speed, config.maxScaleX), scaleY: 1 - Math.min(speed, config.maxScaleY),
+                overwrite: 'auto'
+            });
+        }
+    };
+    gsap.ticker.add(update);
+    window.addEventListener('pointermove', (e) => {
+        pos.target.x = e.clientX; pos.target.y = e.clientY;
+        gsap.to(cursorEl, { opacity: 1, duration: 0.2, overwrite: 'auto' });
+        const target = e.target;
+        const isTextContent = ['P', 'SPAN', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(target.tagName) || window.getComputedStyle(target).cursor === 'text';
+        if (isTextContent && !isHovered && !isDetaching) {
+            gsap.to(cursorEl, { scaleX: 0.5, scaleY: 1.5, duration: 0.3, overwrite: 'auto' });
+        }
+    });
+    document.addEventListener('mouseleave', () => gsap.to(cursorEl, { opacity: 0, duration: 0.3 }));
+    document.addEventListener('mouseenter', () => gsap.to(cursorEl, { opacity: 1, duration: 0.3 }));
+    document.querySelectorAll('[data-magnetic]').forEach(el => {
+        const xTo = gsap.quickTo(el, 'x', { duration: 1, ease: 'elastic.out(1, 0.3)' });
+        const yTo = gsap.quickTo(el, 'y', { duration: 1, ease: 'elastic.out(1, 0.3)' });
+        el.addEventListener('pointerenter', () => {
+            isHovered = true; isDetaching = false;
+            const bounds = el.getBoundingClientRect();
+            const computedStyle = window.getComputedStyle(el);
+            const dynamicPadding = config.hoverPadding * (1 + config.magneticFactor);
+            const centerX = bounds.left + bounds.width / 2; const centerY = bounds.top + bounds.height / 2;
+            gsap.killTweensOf(cursorEl);
+            gsap.to(cursorEl, {
+                x: centerX, y: centerY, width: bounds.width + dynamicPadding * 2, height: bounds.height + dynamicPadding * 2,
+                borderRadius: computedStyle.borderRadius, scaleX: 1, scaleY: 1, rotate: 0,
+                duration: 0.3, ease: 'power3.out', overwrite: 'all'
+            });
+        });
+        el.addEventListener('pointerleave', () => {
+            const currentX = gsap.getProperty(cursorEl, "x"); const currentY = gsap.getProperty(cursorEl, "y");
+            pos.current.x = currentX; pos.current.y = currentY;
+            pos.previous.x = currentX; pos.previous.y = currentY;
+            isHovered = false; isDetaching = true;
+            gsap.killTweensOf(cursorEl);
+            gsap.to(cursorEl, {
+                width: config.cursorSize, height: config.cursorSize, borderRadius: '50%', scaleX: 1, scaleY: 1,
+                duration: 0.35, ease: 'power3.out', overwrite: 'all', onComplete: () => { isDetaching = false; }
+            });
+        });
+        el.addEventListener('pointermove', (e) => {
+            const { clientX, clientY } = e; const { height, width, left, top } = el.getBoundingClientRect();
+            xTo((clientX - (left + width / 2)) * config.magneticFactor);
+            yTo((clientY - (top + height / 2)) * config.magneticFactor);
+        });
+        el.addEventListener('pointerout', () => { xTo(0); yTo(0); });
+    });
+}
+
+// Character Logic
+document.addEventListener("DOMContentLoaded", () => {
+    initMagneticCursor();
+
+    const eyes = document.querySelectorAll('.eye');
+    const msgInput = document.getElementById('message');
+    
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let isTypingMessage = false;
+    let isPeeking = false;
+
+    window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        updatePositions();
+    });
+
+    // Peeking logic
+    msgInput.addEventListener('focus', () => {
+        isTypingMessage = true;
+        updatePositions();
+        startPeeking();
+    });
+    msgInput.addEventListener('blur', () => {
+        isTypingMessage = false;
+        stopPeeking();
+        updatePositions();
+    });
+    
+    let peekInterval;
+    function startPeeking() {
+        if(peekInterval) clearInterval(peekInterval);
+        const schedulePeek = () => {
+            peekInterval = setTimeout(() => {
+                isPeeking = true;
+                updatePositions();
+                setTimeout(() => {
+                    isPeeking = false;
+                    updatePositions();
+                    schedulePeek();
+                }, 1000); // look at the text box for 1 second
+            }, Math.random() * 3000 + 2000);
+        };
+        schedulePeek();
+    }
+    function stopPeeking() {
+        if(peekInterval) clearTimeout(peekInterval);
+        isPeeking = false;
+    }
+
+    // Blinking logic for purple and black
+    function setupBlink(containerId) {
+        const eyeEls = document.querySelectorAll(`#${containerId} .eye`);
+        const scheduleBlink = () => {
+            setTimeout(() => {
+                eyeEls.forEach(eye => eye.classList.add('blink'));
+                setTimeout(() => {
+                    eyeEls.forEach(eye => eye.classList.remove('blink'));
+                    scheduleBlink();
+                }, 150);
+            }, Math.random() * 4000 + 3000);
+        };
+        scheduleBlink();
+    }
+    setupBlink('eyes-purple');
+    setupBlink('eyes-black');
+
+    const chars = {
+        purple: { el: document.getElementById('c-purple') },
+        black: { el: document.getElementById('c-black') },
+        orange: { el: document.getElementById('c-orange') },
+        yellow: { el: document.getElementById('c-yellow') },
+    };
+
+    function updatePositions() {
+        // Calculate pupil position for each eye
+        eyes.forEach(eye => {
+            const pupil = eye.querySelector('.pupil');
+            if(!pupil) return;
+            
+            const maxDistance = parseFloat(eye.getAttribute('data-maxdist') || '5');
+            let pupilX = 0;
+            let pupilY = 0;
+
+            if (isTypingMessage) {
+                if (isPeeking) {
+                    // Look to the right at the text box
+                    pupilX = maxDistance;
+                    pupilY = 0;
+                } else {
+                    // Look away (left and down)
+                    pupilX = -maxDistance;
+                    pupilY = maxDistance;
+                }
+            } else {
+                // Track mouse
+                const rect = eye.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                const deltaX = mouseX - centerX;
+                const deltaY = mouseY - centerY;
+                const distance = Math.min(Math.sqrt(deltaX ** 2 + deltaY ** 2), maxDistance);
+                const angle = Math.atan2(deltaY, deltaX);
+                
+                pupilX = Math.cos(angle) * distance;
+                pupilY = Math.sin(angle) * distance;
+            }
+            
+            pupil.style.transform = `translate(${pupilX}px, ${pupilY}px)`;
+        });
+
+        // Calculate character body lean
+        Object.keys(chars).forEach(key => {
+            const char = chars[key];
+            if(!char.el) return;
+            
+            const rect = char.el.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const deltaX = mouseX - centerX;
+            
+            let bodySkew = Math.max(-6, Math.min(6, -deltaX / 120));
+            
+            if (isTypingMessage) {
+                if (isPeeking) {
+                    bodySkew = -10; // Lean right towards form
+                } else {
+                    bodySkew = 8; // Lean away left
+                }
+            }
+            
+            char.el.style.transform = `skewX(${bodySkew}deg)`;
+            
+            // Move eyes container slightly based on face tracking
+            const eyeContainer = document.getElementById(`eyes-${key}`);
+            if(eyeContainer) {
+                const faceX = isTypingMessage ? (isPeeking ? 12 : -12) : Math.max(-15, Math.min(15, deltaX / 20));
+                eyeContainer.style.transform = `translateX(${faceX}px)`;
+            }
+            
+            // Move yellow mouth
+            if(key === 'yellow') {
+                const mouth = document.getElementById('yellow-mouth');
+                if(mouth) {
+                    const faceX = isTypingMessage ? (isPeeking ? 12 : -12) : Math.max(-15, Math.min(15, deltaX / 20));
+                    mouth.style.transform = `translateX(${faceX}px)`;
+                }
+            }
+        });
+        
+        // Specific typing reaction for Purple
+        if(chars.purple.el) {
+            if(isTypingMessage) {
+                chars.purple.el.style.height = '430px';
+                chars.purple.el.style.transform = `skewX(${isPeeking ? -5 : 10}deg) translateX(${isPeeking ? 20 : 0}px)`;
+            } else {
+                chars.purple.el.style.height = '400px';
+            }
+        }
+    }
+    
+    // Initial call
+    updatePositions();
+
+    // Textarea Character Counter & Sanitizer
+    const charCountEl = document.getElementById('char-count');
+    msgInput.addEventListener('input', (e) => {
+        let text = e.target.value;
+        // Basic sanitization: strip out < and >
+        text = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        
+        if (text.length > 500) {
+            text = text.substring(0, 500);
+            e.target.value = text;
+        }
+        
+        charCountEl.textContent = `${text.length}/500`;
+        if (text.length >= 500) {
+            charCountEl.style.color = "var(--red-500, red)";
+        } else {
+            charCountEl.style.color = "var(--zinc-500)";
+        }
+    });
+
+    // Cloud Backend & EmailJS Setup
+    const backendPill = document.getElementById('backend-status-pill');
+    const backendDot = document.getElementById('backend-status-dot');
+    const backendLabel = document.getElementById('backend-status-label');
+    const formFeedback = document.getElementById('form-feedback');
+
+    let isBackendConnected = false;
+    const apiBase = (typeof CONFIG !== 'undefined' && CONFIG.BASE_URL) ? CONFIG.BASE_URL : (typeof BASE_URL !== 'undefined' ? BASE_URL : "http://localhost:8000");
+
+    // Initialize EmailJS as fallback
+    if (typeof emailjs !== 'undefined') {
+        emailjs.init("q8VbkeA2nt-tHaXye");
+    }
+
+    // Check Cloud Backend Connection
+    async function checkCloudBackend() {
+        if (!backendPill) return;
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3000);
+            const res = await fetch(`${apiBase}/api/health`, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            if (res.ok) {
+                isBackendConnected = true;
+                backendDot.style.background = "#22c55e"; // Green
+                backendLabel.textContent = "AWS EC2 Backend: Connected (Port 8000)";
+                backendPill.style.borderColor = "#86efac";
+                backendPill.style.background = "#f0fdf4";
+                return;
+            }
+        } catch (err) {
+            // Backend offline or unreachable (e.g. EC2 instance not started yet)
+        }
+
+        isBackendConnected = false;
+        backendDot.style.background = "#f59e0b"; // Amber
+        backendLabel.textContent = "S3 Static Mode (EmailJS Active)";
+        backendPill.style.borderColor = "#fde68a";
+        backendPill.style.background = "#fffbeb";
+    }
+
+    checkCloudBackend();
+
+    function showFeedback(msg, type = 'success') {
+        if (!formFeedback) return;
+        formFeedback.style.display = 'block';
+        if (type === 'success') {
+            formFeedback.style.background = '#f0fdf4';
+            formFeedback.style.color = '#15803d';
+            formFeedback.style.borderColor = '#bbf7d0';
+        } else {
+            formFeedback.style.background = '#fef2f2';
+            formFeedback.style.color = '#b91c1c';
+            formFeedback.style.borderColor = '#fecaca';
+        }
+        formFeedback.innerHTML = msg;
+    }
+
+    const form = document.getElementById('message-form');
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        // Rate Limiting Logic: 1 message per 10 minutes for testing/demo
+        const TEN_MIN_MS = 10 * 60 * 1000;
+        const lastSent = localStorage.getItem('lastMessageSent');
+        if (lastSent && (Date.now() - parseInt(lastSent, 10)) < TEN_MIN_MS) {
+            showFeedback('⏱️ You recently sent a message. Please wait a few minutes before sending another!', 'error');
+            return;
+        }
+
+        const btn = form.querySelector('button[type="submit"]');
+        const originalText = btn.textContent;
+        btn.textContent = "Sending to Cloud...";
+        btn.style.opacity = "0.7";
+        btn.style.pointerEvents = "none";
+
+        const nameInput = document.getElementById('name').value.trim();
+        const emailInput = document.getElementById('email').value.trim();
+        const messageInput = msgInput.value.trim();
+
+        if (!nameInput || !emailInput || !messageInput) {
+            showFeedback('Please fill out all fields.', 'error');
+            btn.textContent = originalText;
+            btn.style.opacity = "1";
+            btn.style.pointerEvents = "auto";
+            return;
+        }
+
+        // 1. Try EC2 FastAPI Backend first
+        if (isBackendConnected) {
+            try {
+                const response = await fetch(`${apiBase}/api/contact`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: nameInput,
+                        email: emailInput,
+                        message: messageInput
+                    })
+                });
+
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    localStorage.setItem('lastMessageSent', Date.now().toString());
+                    showFeedback(`✅ <strong>Success!</strong> ${data.message} (Message #${data.message_id || 'saved'})`, 'success');
+                    form.reset();
+                    charCountEl.textContent = "0/500";
+                    btn.textContent = originalText;
+                    btn.style.opacity = "1";
+                    btn.style.pointerEvents = "auto";
+                    return;
+                }
+            } catch (err) {
+                console.warn("EC2 API call failed, falling back to EmailJS:", err);
+            }
+        }
+
+        // 2. Fallback to EmailJS (Serverless)
+        const sanitize = (str) => str.replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
+        const templateParams = {
+            from_name: sanitize(nameInput),
+            reply_to: sanitize(emailInput),
+            message: sanitize(messageInput)
+        };
+
+        if (typeof emailjs !== 'undefined') {
+            emailjs.send("service_3594", "template_zhxu1x1", templateParams)
+                .then(function() {
+                    localStorage.setItem('lastMessageSent', Date.now().toString());
+                    showFeedback('✅ Message sent successfully via Serverless Email Service!', 'success');
+                    form.reset();
+                    charCountEl.textContent = "0/500";
+                }, function(error) {
+                    console.error("EmailJS error:", error);
+                    showFeedback('⚠️ Message could not be processed. Please check your backend or EmailJS config.', 'error');
+                })
+                .finally(function() {
+                    btn.textContent = originalText;
+                    btn.style.opacity = "1";
+                    btn.style.pointerEvents = "auto";
+                });
+        } else {
+            showFeedback('⚠️ No active transport available to send message.', 'error');
+            btn.textContent = originalText;
+            btn.style.opacity = "1";
+            btn.style.pointerEvents = "auto";
+        }
+    });
+});
+
