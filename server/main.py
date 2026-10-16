@@ -1,19 +1,30 @@
 import os
+import sys
+from pathlib import Path
 import sqlite3
 from datetime import datetime
 from typing import List, Optional
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, EmailStr, Field
+
+# Ensure server directory is in sys.path for robust imports regardless of working dir
+SERVER_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SERVER_DIR.parent
+if str(SERVER_DIR) not in sys.path:
+    sys.path.insert(0, str(SERVER_DIR))
 
 import config
 
 # Initialize FastAPI application
 app = FastAPI(
     title="Acharya Portfolio Cloud API",
-    description="Full-stack FastAPI backend deployed on AWS EC2 for portfolio dynamic content & contact management.",
+    description="Full-stack FastAPI backend for portfolio dynamic content & contact management.",
     version="1.0.0"
 )
+
 
 # Configure CORS Middleware
 # Allows S3 static hosting, EC2 frontend, and local dev to interact seamlessly
@@ -96,15 +107,35 @@ PROJECTS_DATA = {
 # --- API Endpoints ---
 
 @app.get("/")
-def root():
+def root(request: Request):
+    """
+    Root route:
+    - Returns JSON status when queried by API / curl
+    - Serves the portfolio page when accessed from a web browser
+    """
+    accept = request.headers.get("accept", "")
+    if "application/json" in accept and "text/html" not in accept:
+        return {
+            "status": "online",
+            "service": "Acharya Portfolio Cloud API",
+            "docs_url": "/docs",
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    
+    index_file = PROJECT_ROOT / "html" / "index.html"
+    if index_file.exists():
+        return FileResponse(str(index_file))
+    return RedirectResponse(url="/docs")
+
+@app.get("/api")
+def api_root():
     return {
         "status": "online",
-        "service": "Acharya Portfolio Cloud Backend",
-        "cloud_provider": "AWS",
-        "compute": "Amazon EC2 (t3.micro)",
+        "service": "Acharya Portfolio Cloud API",
         "docs_url": "/docs",
         "timestamp": datetime.utcnow().isoformat()
     }
+
 
 @app.get("/api/health")
 def health_check():
@@ -200,6 +231,18 @@ def get_stats():
         "architecture": "AWS EC2 Backend + AWS S3 Serverless Frontend"
     }
 
+# --- Mount Static Assets ---
+# Serves CSS, JS, Assets, and HTML pages directly from the project root
+if (PROJECT_ROOT / "css").exists():
+    app.mount("/css", StaticFiles(directory=str(PROJECT_ROOT / "css")), name="css")
+if (PROJECT_ROOT / "js").exists():
+    app.mount("/js", StaticFiles(directory=str(PROJECT_ROOT / "js")), name="js")
+if (PROJECT_ROOT / "assets").exists():
+    app.mount("/assets", StaticFiles(directory=str(PROJECT_ROOT / "assets")), name="assets")
+if (PROJECT_ROOT / "html").exists():
+    app.mount("/html", StaticFiles(directory=str(PROJECT_ROOT / "html")), name="html")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host=config.HOST, port=config.PORT, reload=True)
+

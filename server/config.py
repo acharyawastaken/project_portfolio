@@ -13,6 +13,7 @@ import os
 # Example: FRONTEND_URL = "http://my-portfolio-bucket.s3-website.ap-southeast-2.amazonaws.com"
 FRONTEND_URL = os.getenv("FRONTEND_URL", "*")
 
-# Host and Port
-HOST = "0.0.0.0"
-PORT = 8000
+# Host and Port (Render provides $PORT dynamic environment variable)
+HOST = os.getenv("HOST", "0.0.0.0")
+PORT = int(os.getenv("PORT", 8000))
+

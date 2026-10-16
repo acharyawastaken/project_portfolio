@@ -50,13 +50,35 @@ Since this is a static website, you don't need any complex build tools. *You're 
    cd project_portfolio
    ```
 
-2. **Run it locally:**
-   - You can simply open `html/index.html` in your browser. *Yes, double-clicking a file still works.*
-   - Or, if you want to feel like a real hacker, use Python's HTTP server:
+2. **Run it locally with the Full-Stack Server:**
+   - Install dependencies:
      ```bash
-     python -m http.server 8000
+     pip install -r server/requirements.txt
      ```
-     Then navigate to `http://localhost:8000/html/index.html` in your browser.
+   - Start the unified FastAPI backend & frontend server:
+     ```bash
+     python -m uvicorn server.main:app --reload --port 8000
+     ```
+   - Open your browser at `http://localhost:8000/` to view the website, or `http://localhost:8000/docs` for the interactive API Swagger UI!
+
+## ☁️ Deploy to Render
+
+This repository includes a preconfigured `render.yaml` for 1-click deployment on [Render](https://render.com):
+
+1. **Push your code to GitHub**:
+   Ensure `render.yaml` and your latest changes are pushed to your GitHub repository.
+2. **Go to Render Dashboard**:
+   - Click **New +** > **Blueprint**.
+   - Connect your GitHub repository.
+   - Render will detect `render.yaml` and configure the web service automatically.
+   - Click **Apply** to deploy!
+3. **Manual Setup Alternative**:
+   - If setting up a Web Service manually:
+     - **Runtime**: `Python 3`
+     - **Build Command**: `pip install -r server/requirements.txt`
+     - **Start Command**: `uvicorn server.main:app --host 0.0.0.0 --port $PORT`
+     - **Health Check Path**: `/api/health`
+
 
 ## 🎨 Customization
 
